@@ -168,7 +168,7 @@ Selects specific columns *Pregnancies*, *Glucose*, *BMI*, *PregnancyRatio*,
 ### Steps
 1. Clone the repository:
    ```bash
-   git clone https://github.com/AbdullahiAhm/Diabetes-Prediction.git
+   git clone https://github.com/AbdullahiAhm/Diabetes-Prediction-App.git
    cd Diabetes-Prediction
    ```
 

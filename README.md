@@ -8,7 +8,7 @@ This project demonstrates a machine learning solution for predicting diabetes ba
 
 ## Live Demo
 
-Check out the live application: [Diabetes Prediction App](https://diabetes-prediction-uz.streamlit.app/)
+Check out the live application: [Diabetes Prediction App]()
 
 ---
 
@@ -40,6 +40,8 @@ Understanding diabetes risk through data-driven predictions can help identify po
 - Practical application of machine learning.
 - Model interpretability through SHAP and permutation importance.
 - Real-world deployment of machine learning models.
+-Practical Deployment: The project demonstrates end-to-end deployment—from data preprocessing to live prediction via a web interface.
+-Early Warning: Data-driven predictions can help in early identification of potential diabetes cases.
 
 ---
 
@@ -88,8 +90,27 @@ The dataset contains the following details:
 ---
 
 ## Model
-You can learn more about the model in detail from [here](notebooks/Model.ipynb). The `RandomForestClassifier` model was chosen through experimentation and showed the best performance. The required hyperparameters were identified using the `optuna` optimizer. For the model to function, it needs `FeatureEngineering`, `WoEEncoding`, and `ColumnSelector` transformers, which are combined through a pipeline.
+You can learn more about the model in detail from [here](notebooks/Model.ipynb). The `GradientBoostingClassifier` model was chosen through experimentation and showed the best performance.
+1. Stability & Generalization
+Overfitting Control: Unlike Random Forest, which may sometimes be prone to overfitting, Gradient Boosting builds trees sequentially and optimizes for errors made by previous models. This helps in better generalization, which is crucial when dealing with real-world, unseen data.
+Robust Performance on Noisy Data: Since Gradient Boosting focuses on correcting errors iteratively, it is often more stable than XGBoost when dealing with noise in data.
+2. Interpretability & Feature Importance
+Better Feature Attribution: Gradient Boosting is known for generating feature importance that can be easily interpreted using SHAP (Shapley Additive Explanations), as seen in your explainer.py file​explainer. This allows domain experts and healthcare professionals to understand what factors contribute most to the predictions.
+3. Performance Beyond Accuracy (ROC AUC)
+Strong ROC AUC Score (95.37%): Even though its accuracy is slightly lower than XGBoost and Random Forest, Gradient Boosting has the highest ROC AUC score (95.37%), meaning it is better at distinguishing between positive and negative cases. This is especially crucial in medical applications like diabetes prediction, where precision in identifying high-risk patients is more important than just accuracy.
+4. Computational Efficiency
+Less Memory Intensive than Random Forest: Gradient Boosting typically requires fewer trees than Random Forest to achieve comparable performance, making it a better choice for deployment in resource-constrained environments.
+Faster Training than XGBoost: While XGBoost is an optimized implementation, its hyperparameter tuning and tree-pruning mechanisms can be computationally expensive.
+5. Better Handling of Class Imbalances
+In real-world applications like diabetes prediction, datasets often contain imbalanced classes (more non-diabetic than diabetic cases). Gradient Boosting handles such imbalances better due to its iterative re-weighting mechanism.
+The required hyperparameters were identified using the `optuna` optimizer. For the model to function, it needs `FeatureEngineering`, `WoEEncoding`, and `ColumnSelector` transformers, which are combined through a pipeline.
 `Cross-validation` and `ROC AUC` were used for model selection because the number of observations was small, and splitting into test/train sets would have been inaccurate.
+The final prediction pipeline is built using Gradient Boosting and incorporates several custom transformers to enhance feature quality:
+
+FeatureEngineering: Creates new features (e.g., PregnancyRatio, RiskScore, InsulinEfficiency) that capture underlying relationships in the data.
+WoEEncoding: Transforms selected features into their Weight of Evidence (WoE) representation, improving interpretability.
+ColumnSelector: Selects the most relevant engineered features for the final model.
+The pipeline was constructed after experimenting with multiple models (including SVM, Decision Tree, and Random Forest) and was ultimately evaluated using cross-validation with the ROC AUC metric. The final model is saved as diabetes_prediction_pipeline.joblib for deployment.
 
 ### About tarnsformers
 #### **1. FeatureEngineering**
@@ -122,13 +143,18 @@ Selects specific columns *Pregnancies*, *Glucose*, *BMI*, *PregnancyRatio*,
 3. **SHAP Explanations**: Visualize individual prediction explanations using:
    - Waterfall Plot
    - Force Plot
-4. **Permutation Importance**: Analyze which features most influence the predictions.
-5. **Performance Metrics**:
+
+4.**Permutation Importance**: Explore which features have the highest impact on the model’s decisions.
+**Performance Metrics**: View accuracy, precision, recall, F1 score, and ROC AUC via interactive charts.
+**Educational Content**: An "About" section provides insights on diabetes risk factors and model methodology.
+5. **Permutation Importance**: Analyze which features most influence the predictions.
+6. **Performance Metrics**:
    - Accuracy
    - Precision
    - Recall
    - F1 Score
    - ROC AUC
+7.**Real-Time Prediction**: The trained pipeline predicts diabetes risk on the fly.
 6. **Informational Section**: Learn about diabetes risk factors in the "About" section.
 
 ---
@@ -142,7 +168,7 @@ Selects specific columns *Pregnancies*, *Glucose*, *BMI*, *PregnancyRatio*,
 ### Steps
 1. Clone the repository:
    ```bash
-   git clone https://github.com/UznetDev/Diabetes-Prediction.git
+   git clone https://github.com/AbdullahiAhm/Diabetes-Prediction.git
    cd Diabetes-Prediction
    ```
 
@@ -185,13 +211,13 @@ Diabetes-Prediction/
 ├── datasets/
 │   ├── diabetes.csv          # Dataset used for training and predictions
 ├── models/
-│   ├── model.pkl             # Trained machine learning model
+│   ├── diabetes_prediction_pipeline.joblib             # Trained machine learning model
 ├── images/
 │   ├── page_icon.jpeg        # Application page icon
 ├── data/
 │   ├── config.py             # Configuration variables
 │   ├── base.py               # Static HTML/CSS content
-├── functions/
+├── function/
 │   ├── model.py              # Custom model implementation
 │   ├── function.py           # Utility functions
 └── app/                      # Application logic and components
@@ -220,11 +246,11 @@ Diabetes-Prediction/
 ## Model Performance
 
 Performance metrics calculated:
-- **Accuracy**: Percentage of correct predictions. (0.7857)
-- **Precision**: Ratio of true positives to total positive predictions. (0.6296)
-- **Recall**: Ratio of true positives to total actual positives. (0.9444)
-- **F1 Score**: Harmonic mean of Precision and Recall. (0.7556)
-- **ROC AUC**: Area under the ROC curve. (0.8367)
+- **Accuracy**: Percentage of correct predictions. (0.8571)
+- **Precision**: Ratio of true positives to total positive predictions. (0.7692)
+- **Recall**: Ratio of true positives to total actual positives. (0.8333)
+- **F1 Score**: Harmonic mean of Precision and Recall. (0.8000)
+- **ROC AUC**: Area under the ROC curve. (0.8904)
 
 Metrics are displayed as donut charts in the application.
 
@@ -264,11 +290,10 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## Contacts
 
 If you have any questions or suggestions, please contact:
-- Email: uznetdev@gmail.com
-- GitHub Issues: [Issues section](https://github.com/UznetDev/Diabetes-Prediction/issues)
-- GitHub Profile: [UznetDev](https://github.com/UznetDev/)
-- Telegram: [UZNet_Dev](https://t.me/UZNet_Dev)
-- Linkedin: [Abdurakhmon Niyozaliev](https://www.linkedin.com/in/uznetdev/)
+- Email: updulze29@gmail.com
+- GitHub Issues: [Issues section](https://github.com/AbdullahiAhm/Diabetes-Prediction/issues)
+- GitHub Profile: [AbdullahiAhm](https://github.com/AbdullahiAhm/)
+- Linkedin: [Abdullahi Ahmed](https://www.linkedin.com/in/AbdullahiAhm/)
 
 
 ### <i>Thank you for your interest in the project!</i>

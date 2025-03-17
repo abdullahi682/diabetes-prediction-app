@@ -1,57 +1,82 @@
 import streamlit as st
 import shap
 import time
-from loader import model
 import matplotlib.pyplot as plt
-
+from loader import model
 
 def app(input_data):
+    # Transform the input data using the feature engineering step.
     sample_transformed = model.named_steps['feature_engineering'].transform(input_data)
+    
+    # Create SHAP explainer for the final model.
     explainer = shap.TreeExplainer(model.named_steps['model'])
-    shap_values_single = explainer.shap_values(sample_transformed)
-
-    shap_values_class_1 = shap_values_single[0][:, 1]  
-
-
+    
+    # Compute SHAP values.
+    shap_values = explainer.shap_values(sample_transformed)
+    
+    # Determine if SHAP returned a list (one per class) or a single array.
+    if isinstance(shap_values, list):
+        if len(shap_values) > 1:
+            shap_values_for_sample = shap_values[1]
+            base_value = explainer.expected_value[1]
+        else:
+            shap_values_for_sample = shap_values[0]
+            base_value = explainer.expected_value
+    else:
+        shap_values_for_sample = shap_values
+        base_value = explainer.expected_value
+    
+    # For a single sample, extract the first row.
+    shap_values_sample = shap_values_for_sample[0]
+    
+    # Updated input streaming with the formatting from your screenshot.
     def stream_data():
-        text = f"""
-Your inputs:\n
-`Pregnancies`: {float(input_data.iloc[0]['Pregnancies'])}\n
-`Glucose`: {float(input_data.iloc[0]['Pregnancies'])}\n
-`Insulin`: {float(input_data.iloc[0]['Pregnancies'])}\n
-`BMI`: {float(input_data.iloc[0]['Pregnancies'])}\n
-`Age`: {float(input_data.iloc[0]['Pregnancies'])}
-                """
-        for word in text.split(" "):
-            yield word + " "
-            time.sleep(0.05)
+        lines = [
+            # Label in green italic, then value on a new line, plus a blank line
+            f"<p style='color:green; font-style:italic;'>Pregnancies:</p>",
+            f"<p>{float(input_data.iloc[0]['Pregnancies'])}</p><br>",
 
+            f"<p style='color:green; font-style:italic;'>Glucose:</p>",
+            f"<p>{float(input_data.iloc[0]['Glucose'])}</p><br>",
+
+            f"<p style='color:green; font-style:italic;'>Insulin:</p>",
+            f"<p>{float(input_data.iloc[0]['Insulin'])}</p><br>",
+
+            f"<p style='color:green; font-style:italic;'>BMI:</p>",
+            f"<p>{float(input_data.iloc[0]['BMI'])}</p><br>",
+
+            f"<p style='color:green; font-style:italic;'>Age:</p>",
+            f"<p>{float(input_data.iloc[0]['Age'])}</p><br>"
+        ]
+        # Stream each segment with a slight delay
+        for line in lines:
+            st.markdown(line, unsafe_allow_html=True)
+            time.sleep(0.4)
+    
     # Layout with two columns
     cols = st.columns(2)
-
-    # Column 1: Stream user input
+    
+    # Column 1: Stream user input with styled text
     with cols[0]:
         st.markdown("### Input Streaming")
         st.markdown("#### See your inputs in real-time below!")
-        for word in stream_data():
-            st.write(word)
-
+        stream_data()
+    
     # SHAP Waterfall Plot
     fig, ax = plt.subplots()
-    shap.plots.waterfall(
-        shap.Explanation(
-            values=shap_values_class_1,
-            base_values=explainer.expected_value[0],
-            data=sample_transformed.iloc[0],
-            feature_names=sample_transformed.columns.tolist()
-        ), show=False
+    explanation = shap.Explanation(
+        values=shap_values_sample,
+        base_values=base_value,
+        data=sample_transformed.iloc[0],
+        feature_names=sample_transformed.columns.tolist()
     )
+    shap.plots.waterfall(explanation, show=False)
     fig.patch.set_facecolor("lightblue")
     fig.patch.set_alpha(0.3)
     ax.set_facecolor("#023047")
     ax.patch.set_alpha(0.5)
-
-    # Column 2: SHAP Waterfall Plot
+    
+    # Column 2: Display SHAP Waterfall Plot
     with cols[1]:
         st.markdown("### SHAP Waterfall Plot")
         st.markdown(
@@ -62,27 +87,32 @@ Your inputs:\n
             """
         )
         st.pyplot(fig)
-
+    
     # SHAP Force Plot
+    if isinstance(shap_values, list):
+        force_shap_values = shap_values[1] if len(shap_values) > 1 else shap_values[0]
+        force_base_value = explainer.expected_value[1] if isinstance(explainer.expected_value, list) and len(explainer.expected_value) > 1 else explainer.expected_value
+    else:
+        force_shap_values = shap_values
+        force_base_value = explainer.expected_value
+    
     force_plot_html = shap.force_plot(
-        base_value=explainer.expected_value[1],
-        shap_values=shap_values_single[0][:, 1],
+        base_value=force_base_value,
+        shap_values=force_shap_values[0],
         features=sample_transformed.iloc[0],
         feature_names=sample_transformed.columns.tolist()
     )
-
-    # Explanation column
+    
     st.markdown(
         """
         ### Column Explanations
         - 🟡 **Input Streaming**: Displays user inputs dynamically in real-time.
         - 🟡 **SHAP Waterfall Plot**: Visualizes how each feature contributes to the model prediction.
         - 🟡 **SHAP Force Plot**: Interactive plot showing positive/negative feature contributions.
-        \n\n\n\n""",
+        """,
         unsafe_allow_html=True,
     )
-
-    # Add SHAP JS visualization
+    
     force_plot_html = f"<head>{shap.getjs()}</head><body>{force_plot_html.html()}</body>"
-    st.markdown("### SHAP Waterfall Plot")
+    st.markdown("### SHAP Force Plot")
     st.components.v1.html(force_plot_html, height=400)

@@ -11,14 +11,14 @@
 *This project was created for experimental purposes only, the model we developed may make mistakes, and it has not been reviewed by medical professionals. It can only provide you with basic knowledge.  
 Please trust only specialists and take care of your health.*
 
-## Model accurace
+## Model accuracy
 
-`F1 Score:` *0.7556*
+`F1 Score:` *0.94*
 
-`Accuracy Score:` *0.7857*
+`Accuracy Score:` *0.92*
 
-`Recall Score:` *0.9444*
+`Recall Score:` *0.95*
 
-`Precision Score:` *0.6296*
+`Precision Score:` *0.93*
 
-`ROC AUC Score:` *0.8367*
+`ROC AUC Score:` *0.96*

@@ -22,7 +22,7 @@ cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 
 # Load additional resources
 page_icon = Image.open("image/page_icon.jpeg")
-model = joblib.load(r'C:\Users\X1 CARBON TOUCH\Desktop\project-experiementation\Diabetes-Prediction\diabetes_prediction_pipeline.joblib')
+model = joblib.load("diabetes_prediction_pipeline.joblib")
 
 # Evaluate the loaded model using the test set
 y_score = model.predict_proba(X_test)[:, 1]

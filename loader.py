@@ -10,7 +10,7 @@ from sklearn.metrics import (accuracy_score,
 from sklearn.model_selection import train_test_split, StratifiedKFold
 
 # Load the data
-data = pd.read_csv(r'C:\Users\X1 CARBON TOUCH\Desktop\project-experiementation\Diabetes-Prediction\datasets\diabetes.csv')
+data = pd.read_csv('datasets/diabetes.csv')
 X = data[['Pregnancies', 'Glucose', 'Insulin', 'BMI', 'Age']]
 y = data['Outcome']
 

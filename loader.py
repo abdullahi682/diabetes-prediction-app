@@ -21,7 +21,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.09,
 cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 
 # Load additional resources
-page_icon = Image.open(r"C:\Users\X1 CARBON TOUCH\Desktop\project-experiementation\Diabetes-Prediction\image\page_icon.jpeg")
+page_icon = Image.open("image/page_icon.jpeg")
 model = joblib.load(r'C:\Users\X1 CARBON TOUCH\Desktop\project-experiementation\Diabetes-Prediction\diabetes_prediction_pipeline.joblib')
 
 # Evaluate the loaded model using the test set

@@ -8,7 +8,7 @@ This project demonstrates a machine learning solution for predicting diabetes ba
 
 ## Live Demo
 
-Check out the live application: [Diabetes Prediction App]()
+Check out the live application: [Diabetes Prediction App](https://diabetes-prediction-app-m6qd.onrender.com/)
 
 ---
 
@@ -168,7 +168,7 @@ Selects specific columns *Pregnancies*, *Glucose*, *BMI*, *PregnancyRatio*,
 ### Steps
 1. Clone the repository:
    ```bash
-   git clone https://github.com/AbdullahiAhm/Diabetes-Prediction-App.git
+   git clone https://github.com/abdullahi682/diabetes-prediction-app/tree/main
    cd Diabetes-Prediction
    ```
 

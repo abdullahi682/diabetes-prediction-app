@@ -292,7 +292,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 If you have any questions or suggestions, please contact:
 - Email: updulze29@gmail.com
 - GitHub Issues: [Issues section](https://github.com/AbdullahiAhm/Diabetes-Prediction/issues)
-- GitHub Profile: [AbdullahiAhm](https://github.com/AbdullahiAhm/)
+- GitHub Profile: [abdullahi682](https://github.com/abdullahi682/)
 - Linkedin: [Abdullahi Ahmed](https://www.linkedin.com/in/AbdullahiAhm/)
 
 
